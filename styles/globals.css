@@ -15,12 +15,10 @@ a {
   box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: light) {
-  html {
-    color-scheme: light;
-  }
-  body {
-    color: white;
-    background: black;
-  }
+html {
+  color-scheme: light;
+}
+body {
+  color: black;
+  background: #e7ebf0;
 }

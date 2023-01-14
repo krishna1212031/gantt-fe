@@ -15,6 +15,10 @@ interface CommonTableProps {
   tableBody: Project[];
 }
 
+const tableCellStyle = {
+  fontWeight: 600,
+};
+
 const CommonTable: FunctionComponent<CommonTableProps> = ({
   tableHead,
   tableBody,
@@ -25,7 +29,7 @@ const CommonTable: FunctionComponent<CommonTableProps> = ({
         <TableHead>
           <TableRow>
             {tableHead.map((header) => (
-              <TableCell key={header}>{header}</TableCell>
+              <TableCell sx={tableCellStyle} key={header}>{header}</TableCell>
             ))}
           </TableRow>
         </TableHead>

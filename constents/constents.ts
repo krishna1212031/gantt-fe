@@ -6,3 +6,12 @@ export const projectListHeader = [
   "Start Date",
   "End Date",
 ];
+
+export const status = {
+  inProgress: "#29B6F6",
+  delayed: "#FF5252",
+  onHold: "#FFF176",
+  scheduled: "#ffffff",
+  closed: "#90A4AE",
+  completed: "#4CAF50",
+};

@@ -14,9 +14,6 @@ function LinkTab(props: LinkTabProps) {
     <Tab
       sx={{ fontWeight: 600 }}
       LinkComponent={Link}
-      //   onClick={(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-      //     event.preventDefault();
-      //   }}
       {...props}
     />
   );

@@ -1,19 +1,39 @@
 import client from "../../../apollo-client";
 import { getProjects } from "../../../queries/queries";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useState, useEffect } from "react";
 import { Project } from "../../../interfaces/commonInterfaces";
 import CommonTable from "../../../components/common/commonTable";
 import { projectListHeader } from "../../../constants/constents";
 import { GetServerSideProps } from "next";
 import ProjectListTab from "../../../components/tabs/projectListTab";
 import { Box, Paper } from "@mui/material";
-import HeadingSearchBox from "../../../components/headingSearchBox/headingSearchBox";
+import HeadingFilterBox from "../../../components/headingFilterBox/headingFilterBox";
+import { useRouter } from "next/router";
 
 interface ProjectListProps {
   projectList: Array<Project>;
 }
 
 const ProjectList: FunctionComponent<ProjectListProps> = ({ projectList }) => {
+  const router = useRouter();
+  const [projects, setProjects] = useState(projectList);
+
+  useEffect(() => {
+    setProjects(projectList);
+  }, [projectList])
+  
+
+  const handleSearch = async (val: string) => {
+    try {
+      const filteredProjects = await client.query({
+        query: getProjects,
+        variables: { type: router.query.type, search: val },
+      })
+      setProjects(filteredProjects.data.getProjects);
+    } catch (error) {
+    }
+  }
+
   return (
     <Box
       sx={{
@@ -28,9 +48,9 @@ const ProjectList: FunctionComponent<ProjectListProps> = ({ projectList }) => {
       }}
     >
       <Paper>
-        <HeadingSearchBox />
+        <HeadingFilterBox title="Projects" onSearch={handleSearch} />
         <ProjectListTab />
-        <CommonTable tableHead={projectListHeader} tableBody={projectList} />
+        <CommonTable tableHead={projectListHeader} tableBody={projects} />
       </Paper>
     </Box>
   );

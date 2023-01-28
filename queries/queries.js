@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 const getProjects = gql`
-  query projects($type: ProjectType, $search: String) {
-    getProjects(type: $type, search: $search) {
+  query projects($type: ProjectType, $search: String, $fromDate: Date, $toDate: Date) {
+    getProjects(type: $type, search: $search, fromDate: $fromDate, toDate: $toDate) {
       projectID
       name
       scheduledStartDate

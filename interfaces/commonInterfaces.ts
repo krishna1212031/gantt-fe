@@ -7,5 +7,13 @@ export interface Project {
   actualStartDate?: string;
   actualEndDate?: string;
   status: string;
-  projectOwner: string;
+  owner: string;
+  client: string;
 }
+
+export interface IProjectListHeader {
+  label: string;
+  id: string;
+}
+
+export type Order = 'asc' | 'desc';

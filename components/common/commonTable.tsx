@@ -6,53 +6,88 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { FunctionComponent } from "react";
-import { Project } from "../../interfaces/commonInterfaces";
+import { IProjectListHeader, Order, Project } from "../../interfaces/commonInterfaces";
 import moment from "moment";
+import { TableSortLabel } from "@mui/material";
 
 interface CommonTableProps {
-  tableHead: string[];
+  tableHead: IProjectListHeader[];
   tableBody: Project[];
+  onSort: (order: Order, orderBy: string) => void;
+  sort: string;
+}
+
+interface TableHeadProps {
+  order: Order;
+  orderBy: string;
+  onRequestSort: (event: React.MouseEvent<unknown>, property: string) => void;
 }
 
 const tableCellStyle = {
-  fontWeight: 600,
+  fontWeight: 600
 };
 
-const CommonTable: FunctionComponent<CommonTableProps> = ({
-  tableHead,
-  tableBody,
-}) => {
+const CommonTable: FunctionComponent<CommonTableProps> = ({ tableHead, tableBody, onSort, sort }) => {
+  let order: Order, orderBy: string;
+  if (sort.startsWith("-")) {
+    order = "desc";
+    orderBy = sort.slice(1);
+  } else {
+    order = "asc";
+    orderBy = sort;
+  }
+
+  const handleRequestSort = (event: React.MouseEvent<unknown>, property: string) => {
+    const isAsc = orderBy === property && order === "asc";
+    onSort(isAsc ? "desc" : "asc", property);
+  };
+
+  const SortingTableHead = ({ order, orderBy, onRequestSort }: TableHeadProps) => {
+    const createSortHandler = (property: string) => (event: React.MouseEvent<unknown>) => {
+      onRequestSort(event, property);
+    };
+
+    return (
+      <TableHead>
+        <TableRow>
+          {tableHead.map(header => (
+            <TableCell sx={tableCellStyle} key={header.id} sortDirection={orderBy === header.id ? order : false}>
+              <TableSortLabel
+                active={orderBy === header.id}
+                direction={orderBy === header.id ? order : "asc"}
+                onClick={createSortHandler(header.id)}
+              >
+                {header.label}
+              </TableSortLabel>
+            </TableCell>
+          ))}
+        </TableRow>
+      </TableHead>
+    );
+  };
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            {tableHead.map((header) => (
-              <TableCell sx={tableCellStyle} key={header}>{header}</TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
+        <SortingTableHead order="asc" orderBy="projectID" onRequestSort={handleRequestSort} />
         <TableBody>
-          {tableBody.map((row) => (
-            <TableRow
-              key={row.projectID}
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-            >
+          {tableBody.map(row => (
+            <TableRow key={row.projectID} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
               <TableCell component="th" scope="row">
                 {row.status}
               </TableCell>
               <TableCell>{row.projectID}</TableCell>
               <TableCell>{row.name}</TableCell>
-              <TableCell>{row.projectOwner}</TableCell>
+              <TableCell>{row.owner}</TableCell>
               <TableCell>
-                {row.actualStartDate
-                  ? moment(row.actualStartDate).format("LL")
-                  : moment(row.scheduledStartDate).format("LL")}
+                {row.actualStartDate ? moment(row.actualStartDate).format("LL") : moment(row.scheduledStartDate).format("LL")}
               </TableCell>
               <TableCell>
                 {row.actualEndDate
                   ? moment(row.actualEndDate).format("LL")
-                  : moment(row.scheduledEndDate).format("LL")}
+                  : row.scheduledEndDate
+                  ? moment(row.scheduledEndDate).format("LL")
+                  : "N/A"}
               </TableCell>
             </TableRow>
           ))}

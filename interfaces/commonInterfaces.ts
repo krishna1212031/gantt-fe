@@ -1,4 +1,3 @@
-
 export interface Project {
   projectID: string;
   name: string;
@@ -16,4 +15,12 @@ export interface IProjectListHeader {
   id: string;
 }
 
-export type Order = 'asc' | 'desc';
+export type Order = "asc" | "desc";
+
+export type IPaginatedData<T> = {
+  docs: Array<T>;
+  total: number;
+  limit: number;
+  page: number;
+  pages: number;
+};

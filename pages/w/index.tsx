@@ -1,6 +1,6 @@
 import { FunctionComponent } from "react";
 import { Project } from "../../interfaces/commonInterfaces";
-import CommonTable from "../../components/common/commonTable";
+import ProjectTable from "../../components/projects/projectTable/projectTable";
 import { projectListHeader } from "../../constants/constants";
 import { GetServerSideProps } from "next";
 import { get } from "../../utils/request";
@@ -18,7 +18,7 @@ interface ProjectListProps {
 const ProjectList: FunctionComponent<ProjectListProps> = ({ data }) => {
   return (
     <section className="container" style={{ height: "100%" }}>
-      <CommonTable tableHead={projectListHeader} tableBody={data.docs} onSort={() => {}} sort="projectID" />
+      <ProjectTable tableHead={projectListHeader} tableBody={data.docs} onSort={() => {}} sort="projectID" />
     </section>
   );
 };

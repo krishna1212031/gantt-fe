@@ -1,6 +1,6 @@
 import { FunctionComponent, useState, useEffect } from "react";
-import { Order, Project } from "../../../interfaces/commonInterfaces";
-import CommonTable from "../../../components/common/commonTable";
+import { IPaginatedData, Order, Project } from "../../../interfaces/commonInterfaces";
+import ProjectTable from "../../../components/projects/projectTable/projectTable";
 import { projectListHeader } from "../../../constants/constants";
 import { GetServerSideProps } from "next";
 import ProjectListTab from "../../../components/tabs/projectListTab";
@@ -9,14 +9,15 @@ import HeadingFilterBox from "../../../components/headingFilterBox/headingFilter
 import { useRouter } from "next/router";
 import { get } from "../../../utils/request";
 
+// TODO:
+// 1. When search = "S" and fromDate = "2021-01-01" it is showing all results
+// 2. Remove query param from request.js if query not coming
+// 3. Sort is not working properly
+// 4. Add error state
+// 5. Add loading state
+
 interface ProjectListProps {
-  data?: {
-    docs: Array<Project>;
-    total: number;
-    limit: number;
-    page: number;
-    pages: number;
-  };
+  data?: IPaginatedData<Project>;
   message?: string;
 }
 
@@ -27,30 +28,45 @@ interface IFilters {
   sort: string;
 }
 
-const ProjectList: FunctionComponent<ProjectListProps> = ({ data, message }) => {
+const blankPaginateData: IPaginatedData<Project> = { docs: [], limit: 0, page: 0, pages: 0, total: 0 };
+
+const ProjectList: FunctionComponent<ProjectListProps> = ({ data = blankPaginateData, message }) => {
+  const { docs, ...paginate } = data;
   const router = useRouter();
-  const [projects, setProjects] = useState(data?.docs || []);
+  const [projects, setProjects] = useState(docs);
+  const [pagination, setPagination] = useState<Omit<IPaginatedData<Project>, "docs">>(paginate);
   const [apiError, setApiError] = useState(message || null);
   const [filters, setFilters] = useState<IFilters>({ sort: "-_id" });
 
   useEffect(() => {
-    setProjects(data?.docs || []);
+    const { docs, ...rest } = data;
+    setProjects(data.docs || []);
+    setPagination(rest);
   }, [data]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data } = await get(`/api/projects/v1`, { type: (router.query.type || "active") as string, ...filters });
-        setProjects(data.docs);
+        const {
+          data: { docs, ...rest }
+        } = await get<IPaginatedData<Project>>(`/api/projects/v1`, {
+          type: (router.query.type || "active") as string,
+          ...filters,
+          page: pagination.page
+        });
+        setProjects(docs);
+        setPagination(rest);
         setApiError(null);
       } catch (error: any) {
-        setProjects([]);
+        const { docs, ...rest } = data;
+        setProjects(docs);
+        setPagination(rest);
         setApiError(error.message);
       }
     };
 
     fetchData();
-  }, [filters]);
+  }, [filters, pagination.page]);
 
   const handleSearch = (val: string) => setFilters(prev => ({ ...prev, search: val }));
 
@@ -82,7 +98,14 @@ const ProjectList: FunctionComponent<ProjectListProps> = ({ data, message }) => 
         />
         <ProjectListTab />
         {apiError && <div>{apiError}</div>}
-        <CommonTable tableHead={projectListHeader} tableBody={projects} onSort={handleSort} sort={filters.sort} />
+        <ProjectTable
+          tableHead={projectListHeader}
+          tableBody={projects}
+          onSort={handleSort}
+          sort={filters.sort}
+          pagination={pagination}
+          onPageChange={page => setPagination(prev => ({ ...prev, page }))}
+        />
       </Paper>
     </Box>
   );

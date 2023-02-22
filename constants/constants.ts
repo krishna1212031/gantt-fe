@@ -4,7 +4,7 @@ export const projectListHeader: IProjectListHeader[] = [
   {label: "Status", id: "status"},
   {label: "Project ID", id: "projectID"},
   {label: "Project Name", id: "name"},
-  {label: "Project Owner", id: "projectOwner"},
+  {label: "Project Owner", id: "owner"},
   {label: "Start Date", id: "startDate"},
   {label: "End Date", id: "endDate"},
 ];

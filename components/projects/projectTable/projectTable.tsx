@@ -100,6 +100,7 @@ const ProjectTable: FunctionComponent<ProjectTableProps> = ({ tableHead, tableBo
       <TablePagination
         count={pagination.total}
         rowsPerPage={pagination.limit}
+        rowsPerPageOptions={[pagination.limit]}
         page={pagination.page - 1}
         onPageChange={(_, page) => onPageChange(page + 1)}
         component="div"

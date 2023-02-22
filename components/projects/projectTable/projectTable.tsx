@@ -72,7 +72,7 @@ const ProjectTable: FunctionComponent<ProjectTableProps> = ({ tableHead, tableBo
     <>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <SortingTableHead order="asc" orderBy="projectID" onRequestSort={handleRequestSort} />
+          <SortingTableHead order={order} orderBy={orderBy} onRequestSort={handleRequestSort} />
           <TableBody>
             {tableBody.map(row => (
               <TableRow key={row.projectID} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>

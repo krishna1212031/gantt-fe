@@ -1,35 +1,41 @@
-import client from "../../apollo-client";
-import { getProjects } from "../../queries/queries";
 import { FunctionComponent } from "react";
 import { Project } from "../../interfaces/commonInterfaces";
-import CommonTable from "../../components/common/commonTable";
-import { projectListHeader } from "../../constants/constents";
+import ProjectTable from "../../components/projects/projectTable/projectTable";
+import { projectListHeader } from "../../constants/constants";
 import { GetServerSideProps } from "next";
+import { get } from "../../utils/request";
 
 interface ProjectListProps {
-  projectList: Array<Project>;
+  data: {
+    docs: Array<Project>;
+    total: number;
+    limit: number;
+    page: number;
+    pages: number;
+  };
 }
 
-const ProjectList: FunctionComponent<ProjectListProps> = ({ projectList }) => {
+const ProjectList: FunctionComponent<ProjectListProps> = ({ data }) => {
   return (
     <section className="container" style={{ height: "100%" }}>
-      
-      <CommonTable tableHead={projectListHeader} tableBody={projectList} />
+      <ProjectTable tableHead={projectListHeader} tableBody={data.docs} onSort={() => {}} sort="projectID" />
     </section>
   );
 };
 
 export default ProjectList;
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { data } = await client.query({
-    query: getProjects,
-    variables: { type: context.query.type},
-  });
-
-  return {
-    props: {
-      projectList: data.getProjects,
-    },
-  };
-}
+export const getServerSideProps: GetServerSideProps = async context => {
+  const type = (context.query.type || "active") as string;
+  try {
+    const { data } = await get(`/api/projects/v1`, { type });
+    return {
+      props: { data }
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      props: {}
+    };
+  }
+};

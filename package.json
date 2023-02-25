@@ -4,19 +4,22 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "local": "set NEXT_PUBLIC_ENV=local&&next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
-    "@apollo/client": "^3.7.1",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@fontsource/roboto": "^4.5.8",
     "@mui/icons-material": "^5.10.9",
     "@mui/material": "^5.10.11",
     "@mui/styled-engine-sc": "^5.10.6",
+    "@mui/x-date-pickers": "^5.0.16",
+    "@types/lodash": "^4.14.191",
     "graphql": "^16.6.0",
+    "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "next": "13.0.0",
     "react": "18.2.0",

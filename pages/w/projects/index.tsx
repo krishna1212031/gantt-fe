@@ -10,11 +10,8 @@ import { useRouter } from "next/router";
 import { get } from "../../../utils/request";
 
 // TODO:
-// 1. When search = "S" and fromDate = "2021-01-01" it is showing all results
-// 2. Remove query param from request.js if query not coming
-// 3. Sort is not working properly
-// 4. Add error state
-// 5. Add loading state
+// 1. Add error state
+// 2. Add loading state
 
 interface ProjectListProps {
   data?: IPaginatedData<Project>;

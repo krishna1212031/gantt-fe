@@ -72,6 +72,14 @@ const ProjectTable: FunctionComponent<ProjectTableProps> = ({ tableHead, tableBo
     <>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <colgroup>
+            <col style={{ width: "130px" }} />
+            <col style={{ width: "130px" }} />
+            <col style={{ width: "auto" }} />
+            <col style={{ width: "300px" }} />
+            <col style={{ width: "200px" }} />
+            <col style={{ width: "200px" }} />
+          </colgroup>
           <SortingTableHead order={order} orderBy={orderBy} onRequestSort={handleRequestSort} />
           <TableBody>
             {tableBody.map(row => (

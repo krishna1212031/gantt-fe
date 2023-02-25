@@ -4,7 +4,7 @@ if (process.env.NEXT_PUBLIC_ENV === "local") {
 }
 
 export async function get<T>(input: string, query?: Record<string, any>) {
-  const response = await fetch(`${baseUrl}${input}?${new URLSearchParams(JSON.parse(JSON.stringify(query)))}`, {
+  const response = await fetch(`${baseUrl}${input}${query ? `?${new URLSearchParams(JSON.parse(JSON.stringify(query)))}` : ""}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json"

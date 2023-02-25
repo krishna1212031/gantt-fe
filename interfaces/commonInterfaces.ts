@@ -1,10 +1,12 @@
 export interface Project {
   projectID: string;
   name: string;
+  desc: string;
   scheduledStartDate: string;
-  scheduledEndDate: string;
+  scheduledEndDate?: string;
   actualStartDate?: string;
   actualEndDate?: string;
+  expectedEndDate?: string;
   status: string;
   owner: string;
   client: string;

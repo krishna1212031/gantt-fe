@@ -118,7 +118,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
       props: { data }
     };
   } catch (error: any) {
-    console.log(error);
+    console.error(error);
     return {
       props: { message: error.message }
     };

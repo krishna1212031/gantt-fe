@@ -26,14 +26,14 @@ const sideBarItems: SideBarItem[] = [
       {
         icon: "star",
         text: "List",
-        link: "/w"
+        link: "/w/projects"
+      },
+      {
+        icon: "add",
+        text: "Create Project",
+        link: "/w/projects/create"
       }
     ]
-  },
-  {
-    icon: "view_list",
-    text: "Tasks",
-    link: "/w/projects"
   }
 ];
 

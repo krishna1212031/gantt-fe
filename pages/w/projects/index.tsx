@@ -4,7 +4,7 @@ import ProjectTable from "../../../components/projects/projectTable/projectTable
 import { projectListHeader } from "../../../constants/constants";
 import { GetServerSideProps } from "next";
 import ProjectListTab from "../../../components/tabs/projectListTab";
-import { Box, Paper } from "@mui/material";
+import { Box, Paper, Typography } from "@mui/material";
 import HeadingFilterBox from "../../../components/headingFilterBox/headingFilterBox";
 import { useRouter } from "next/router";
 import { get } from "../../../utils/request";
@@ -87,12 +87,10 @@ const ProjectList: FunctionComponent<ProjectListProps> = ({ data = blankPaginate
       }}
     >
       <Paper>
-        <HeadingFilterBox
-          title="Projects"
-          onSearch={handleSearch}
-          onFilterFromDate={handleFilterFromDate}
-          onFilterToDate={handleFilterToDate}
-        />
+        <Typography variant="h4" component="h1" gutterBottom>
+          Projects
+        </Typography>
+        <HeadingFilterBox onSearch={handleSearch} onFilterFromDate={handleFilterFromDate} onFilterToDate={handleFilterToDate} />
         <ProjectListTab />
         {apiError && <div>{apiError}</div>}
         <ProjectTable

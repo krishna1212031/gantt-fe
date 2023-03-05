@@ -6,6 +6,8 @@ import { Controller, FieldError, FieldErrorsImpl, Merge, useForm } from "react-h
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { IAddress } from "../../../interfaces/commonInterfaces";
+import { Check } from "@mui/icons-material";
+import { get } from "../../../utils/request";
 
 type CreateFormProps = {};
 type a = keyof IAddress;
@@ -51,15 +53,59 @@ const CreateForm: React.FC<CreateFormProps> = () => {
   const {
     register,
     handleSubmit,
+    getValues,
+    setValue,
+    setError,
+    trigger,
     watch,
     control,
     formState: { errors }
-  } = useForm({ resolver: yupResolver(validationSchema) });
+  } = useForm({ resolver: yupResolver(validationSchema), mode: "onTouched" });
 
-  console.log({ errors });
+  const [pinCodeState, setPinCodeState] = React.useState<undefined | "loading" | "success" | "error">(undefined);
 
   const onSubmit = (data: any) => {
     console.log(data, errors);
+  };
+
+  const handlePinCodeBlur = async () => {
+    const isPinCodeValid = await trigger("address.pinCode");
+    if (!isPinCodeValid) {
+      return;
+    }
+
+    const pinCode = getValues("address.pinCode");
+    try {
+      setPinCodeState("loading");
+      setValue("address.city", "");
+      setValue("address.state", "");
+      const { data: { city, state } = {} } = await get<{ city: string; state: string; pinCode: string }>(
+        "/api/pinCodeToAddress/v1/" + pinCode
+      );
+
+      if (!city || !state) {
+        throw new Error("Pin Code is invalid");
+      }
+
+      setPinCodeState("success");
+      setValue("address.city", city);
+      setValue("address.state", state);
+    } catch (error: any) {
+      setPinCodeState("error");
+      setError("address.pinCode", { type: "manual", message: error.message });
+    }
+  };
+
+  const PinCodeAdornment = () => {
+    switch (pinCodeState) {
+      case "loading":
+        return <CircularProgress size={20} />;
+      case "success":
+        return <Check color="success" />;
+      case "error":
+      default:
+        return null;
+    }
   };
 
   return (
@@ -161,8 +207,9 @@ const CreateForm: React.FC<CreateFormProps> = () => {
             {...register("address.pinCode")}
             error={Boolean((errors.address as undefined | IAddressError)?.pinCode as string | undefined)}
             helperText={(errors.address as undefined | IAddressError)?.pinCode?.message as string | undefined}
+            onBlur={handlePinCodeBlur}
             InputProps={{
-              endAdornment: <CircularProgress size={20} />
+              endAdornment: <PinCodeAdornment />
             }}
           />
         </Grid>
@@ -182,10 +229,19 @@ const CreateForm: React.FC<CreateFormProps> = () => {
               ((errors.address as undefined | IAddressError)?.city?.message as string | undefined)
             }
             disabled
+            InputLabelProps={{ shrink: Boolean(watch("address.city")) }}
           />
         </Grid>
         <Grid item xs={0} md={4}>
-          <TextField fullWidth label="State *" id="state" margin="dense" {...register("address.state")} disabled />
+          <TextField
+            fullWidth
+            label="State *"
+            id="state"
+            margin="dense"
+            {...register("address.state")}
+            disabled
+            InputLabelProps={{ shrink: Boolean(watch("address.state")) }}
+          />
         </Grid>
       </Grid>
       <ButtonContainer>

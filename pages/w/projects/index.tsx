@@ -8,6 +8,7 @@ import { Box, Paper, Typography } from "@mui/material";
 import HeadingFilterBox from "../../../components/headingFilterBox/headingFilterBox";
 import { useRouter } from "next/router";
 import { get } from "../../../utils/request";
+import Create from "../../../components/projects/create/create";
 
 // TODO:
 // 1. Add error state
@@ -34,6 +35,7 @@ const ProjectList: FunctionComponent<ProjectListProps> = ({ data = blankPaginate
   const [pagination, setPagination] = useState<Omit<IPaginatedData<Project>, "docs">>(paginate);
   const [apiError, setApiError] = useState(message || null);
   const [filters, setFilters] = useState<IFilters>({ sort: "-_id" });
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   useEffect(() => {
     const { docs, ...rest } = data;
@@ -73,36 +75,52 @@ const ProjectList: FunctionComponent<ProjectListProps> = ({ data = blankPaginate
 
   const handleSort = (order: Order, orderBy: string) => setFilters(prev => ({ ...prev, sort: order === "asc" ? orderBy : `-${orderBy}` }));
 
+  const handleCreateClose = (e: React.MouseEvent, reason?: "escapeKeyDown" | "backdropClick") => {
+    if (reason === "backdropClick" || reason === "escapeKeyDown") {
+      return;
+    }
+    setIsCreateOpen(false);
+  };
+
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexWrap: "wrap",
-        "& > :not(style)": {
-          m: 1,
-          width: "100%",
-          padding: "8px 14px",
-          minHeight: "calc(100vh - 64px)"
-        }
-      }}
-    >
-      <Paper>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Projects
-        </Typography>
-        <HeadingFilterBox onSearch={handleSearch} onFilterFromDate={handleFilterFromDate} onFilterToDate={handleFilterToDate} />
-        <ProjectListTab />
-        {apiError && <div>{apiError}</div>}
-        <ProjectTable
-          tableHead={projectListHeader}
-          tableBody={projects}
-          onSort={handleSort}
-          sort={filters.sort}
-          pagination={pagination}
-          onPageChange={page => setPagination(prev => ({ ...prev, page }))}
-        />
-      </Paper>
-    </Box>
+    <>
+      <Box
+        sx={{
+          display: "flex",
+          flexWrap: "wrap",
+          "& > :not(style)": {
+            m: 1,
+            width: "100%",
+            padding: "8px 14px",
+            minHeight: "calc(100vh - 64px)"
+          }
+        }}
+      >
+        <Paper>
+          <Typography variant="h4" component="h1" gutterBottom>
+            Projects
+          </Typography>
+          <HeadingFilterBox
+            onSearch={handleSearch}
+            onFilterFromDate={handleFilterFromDate}
+            onFilterToDate={handleFilterToDate}
+            onCreate={() => setIsCreateOpen(true)}
+          />
+          <ProjectListTab />
+          {apiError && <div>{apiError}</div>}
+          <ProjectTable
+            tableHead={projectListHeader}
+            tableBody={projects}
+            onSort={handleSort}
+            sort={filters.sort}
+            pagination={pagination}
+            onPageChange={page => setPagination(prev => ({ ...prev, page }))}
+          />
+        </Paper>
+      </Box>
+
+      <Create open={isCreateOpen} onClose={handleCreateClose} />
+    </>
   );
 };
 

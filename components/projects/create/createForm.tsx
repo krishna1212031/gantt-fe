@@ -7,10 +7,13 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { IAddress } from "../../../interfaces/commonInterfaces";
 import { Check } from "@mui/icons-material";
-import { get } from "../../../utils/request";
+import { get, post } from "../../../utils/request";
 
-type CreateFormProps = {};
-type a = keyof IAddress;
+type CreateFormProps = {
+  show: boolean; // this prop is used so that form state is not lost if the form is closed by its direct parent
+  onSuccess: (message: string) => void;
+  onError: (message: string) => void;
+};
 
 type IAddressError = {
   [x in keyof IAddress]: FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined;
@@ -49,7 +52,7 @@ const validationSchema = yup.object({
   })
 });
 
-const CreateForm: React.FC<CreateFormProps> = () => {
+const CreateForm: React.FC<CreateFormProps> = ({ show, onSuccess, onError }) => {
   const {
     register,
     handleSubmit,
@@ -62,10 +65,19 @@ const CreateForm: React.FC<CreateFormProps> = () => {
     formState: { errors }
   } = useForm({ resolver: yupResolver(validationSchema), mode: "onTouched" });
 
+  const [isLoading, setIsLoading] = React.useState(false);
   const [pinCodeState, setPinCodeState] = React.useState<undefined | "loading" | "success" | "error">(undefined);
 
-  const onSubmit = (data: any) => {
-    console.log(data, errors);
+  const onSubmit = async (data: any) => {
+    try {
+      setIsLoading(true);
+      const { message } = await post("/api/projects/v1", data);
+      onSuccess(message!);
+    } catch (error: any) {
+      onError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handlePinCodeBlur = async () => {
@@ -90,6 +102,8 @@ const CreateForm: React.FC<CreateFormProps> = () => {
       setPinCodeState("success");
       setValue("address.city", city);
       setValue("address.state", state);
+      trigger("address.city");
+      trigger("address.state");
     } catch (error: any) {
       setPinCodeState("error");
       setError("address.pinCode", { type: "manual", message: error.message });
@@ -108,7 +122,7 @@ const CreateForm: React.FC<CreateFormProps> = () => {
     }
   };
 
-  return (
+  return show ? (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Grid container columnSpacing={2}>
         <Grid item xs={6} md={4}>
@@ -117,6 +131,7 @@ const CreateForm: React.FC<CreateFormProps> = () => {
             label="Project Name *"
             id="name"
             margin="dense"
+            disabled={isLoading}
             {...register("name")}
             error={Boolean(errors.name)}
             helperText={errors.name?.message as string | undefined}
@@ -139,8 +154,9 @@ const CreateForm: React.FC<CreateFormProps> = () => {
                     <TextField
                       {...params}
                       fullWidth
-                      margin="dense"
                       id="scheduledStartDate"
+                      margin="dense"
+                      disabled={isLoading}
                       error={Boolean(errors.scheduledStartDate)}
                       helperText={errors.scheduledStartDate?.message as string | undefined}
                     />
@@ -152,7 +168,7 @@ const CreateForm: React.FC<CreateFormProps> = () => {
         </Grid>
         <Grid item xs={0} md={4}></Grid>
         <Grid item xs={12} md={8}>
-          <TextField fullWidth label="Description" id="desc" margin="dense" {...register("desc")} multiline rows={2} />
+          <TextField fullWidth label="Description" id="desc" margin="dense" disabled={isLoading} {...register("desc")} multiline rows={2} />
         </Grid>
         <Grid item xs={0} md={4}></Grid>
         <Grid item xs={6} md={4}>
@@ -161,6 +177,7 @@ const CreateForm: React.FC<CreateFormProps> = () => {
             label="Project Owner *"
             id="owner"
             margin="dense"
+            disabled={isLoading}
             {...register("owner")}
             error={Boolean(errors.owner)}
             helperText={errors.owner?.message as string | undefined}
@@ -172,6 +189,7 @@ const CreateForm: React.FC<CreateFormProps> = () => {
             label="Client Name *"
             id="client"
             margin="dense"
+            disabled={isLoading}
             {...register("client")}
             error={Boolean(errors.client)}
             helperText={errors.client?.message as string | undefined}
@@ -189,13 +207,14 @@ const CreateForm: React.FC<CreateFormProps> = () => {
             label="Address Line 1 *"
             id="addressLine1"
             margin="dense"
+            disabled={isLoading}
             {...register("address.address1")}
             error={Boolean((errors.address as undefined | IAddressError)?.address1 as string | undefined)}
             helperText={(errors.address as undefined | IAddressError)?.address1?.message as string | undefined}
           />
         </Grid>
         <Grid item xs={6} md={4}>
-          <TextField fullWidth label="Address Line 2" id="addressLine2" margin="dense" {...register("address.address2")} />
+          <TextField fullWidth label="Address Line 2" id="addressLine2" margin="dense" disabled={isLoading} {...register("address.address2")} />
         </Grid>
         <Grid item xs={0} md={4}></Grid>
         <Grid item xs={6} md={4}>
@@ -204,6 +223,7 @@ const CreateForm: React.FC<CreateFormProps> = () => {
             label="Pin Code *"
             id="pinCode"
             margin="dense"
+            disabled={isLoading}
             {...register("address.pinCode")}
             error={Boolean((errors.address as undefined | IAddressError)?.pinCode as string | undefined)}
             helperText={(errors.address as undefined | IAddressError)?.pinCode?.message as string | undefined}
@@ -219,6 +239,7 @@ const CreateForm: React.FC<CreateFormProps> = () => {
             label="City *"
             id="city"
             margin="dense"
+            disabled
             {...register("address.city")}
             error={
               !Boolean((errors.address as undefined | IAddressError)?.pinCode as string | undefined) &&
@@ -228,7 +249,6 @@ const CreateForm: React.FC<CreateFormProps> = () => {
               !Boolean((errors.address as undefined | IAddressError)?.pinCode as string | undefined) &&
               ((errors.address as undefined | IAddressError)?.city?.message as string | undefined)
             }
-            disabled
             InputLabelProps={{ shrink: Boolean(watch("address.city")) }}
           />
         </Grid>
@@ -238,18 +258,25 @@ const CreateForm: React.FC<CreateFormProps> = () => {
             label="State *"
             id="state"
             margin="dense"
-            {...register("address.state")}
             disabled
+            {...register("address.state")}
             InputLabelProps={{ shrink: Boolean(watch("address.state")) }}
           />
         </Grid>
       </Grid>
       <ButtonContainer>
-        <Submit type="submit" variant="contained" color="primary" size="large">
+        <Submit
+          type="submit"
+          variant="contained"
+          color="primary"
+          size="large"
+          disabled={isLoading}
+          startIcon={isLoading ? <CircularProgress size={20} sx={{ color: theme => theme.palette.common.white }} /> : null}
+        >
           Submit
         </Submit>
       </ButtonContainer>
     </form>
-  );
+  ) : null;
 };
 export default CreateForm;

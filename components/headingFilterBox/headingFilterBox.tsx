@@ -13,7 +13,7 @@ const gridStyle = {
 const HeadingFilterBox: FunctionComponent<HeadingFilterBoxProps> = ({ title, ...filterProps }) => {
   return (
     <Grid container sx={gridStyle} justifyContent="space-between">
-      <Typography variant="h4" component="h1">
+      <Typography variant="h1" component="h1">
         {title}
       </Typography>
       <Filters {...filterProps} />

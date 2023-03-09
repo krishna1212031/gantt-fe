@@ -9,6 +9,7 @@ import { FunctionComponent } from "react";
 import { IPaginatedData, IProjectListHeader, Order, Project } from "../../../interfaces/commonInterfaces";
 import moment from "moment";
 import { TablePagination, TableSortLabel } from "@mui/material";
+import Link from "next/link";
 
 interface ProjectTableProps {
   tableHead: IProjectListHeader[];
@@ -83,7 +84,12 @@ const ProjectTable: FunctionComponent<ProjectTableProps> = ({ tableHead, tableBo
           <SortingTableHead order={order} orderBy={orderBy} onRequestSort={handleRequestSort} />
           <TableBody>
             {tableBody.map(row => (
-              <TableRow key={row.projectID} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+              <TableRow
+                key={row.projectID}
+                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                component={Link}
+                href={`/w/projects/${row.projectID}`}
+              >
                 <TableCell component="th" scope="row">
                   {row.status}
                 </TableCell>

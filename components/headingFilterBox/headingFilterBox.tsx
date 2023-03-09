@@ -1,5 +1,4 @@
 import { Button, Grid } from "@mui/material";
-import Link from "next/link";
 import { FunctionComponent } from "react";
 import Filters, { FiltersProps } from "../projects/filters/filters";
 

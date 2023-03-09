@@ -51,11 +51,12 @@ const ProjectTable: FunctionComponent<ProjectTableProps> = ({ tableHead, tableBo
     };
 
     return (
-      <TableHead>
-        <TableRow>
+      <TableHead component="div">
+        <TableRow component="div">
           {tableHead.map(header => (
-            <TableCell sx={tableCellStyle} key={header.id} sortDirection={orderBy === header.id ? order : false}>
+            <TableCell component="div" sx={tableCellStyle} key={header.id} sortDirection={orderBy === header.id ? order : false}>
               <TableSortLabel
+                component="div"
                 active={orderBy === header.id}
                 direction={orderBy === header.id ? order : "asc"}
                 onClick={createSortHandler(header.id)}
@@ -72,17 +73,9 @@ const ProjectTable: FunctionComponent<ProjectTableProps> = ({ tableHead, tableBo
   return (
     <>
       <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <colgroup>
-            <col style={{ width: "130px" }} />
-            <col style={{ width: "130px" }} />
-            <col style={{ width: "auto" }} />
-            <col style={{ width: "300px" }} />
-            <col style={{ width: "200px" }} />
-            <col style={{ width: "200px" }} />
-          </colgroup>
+        <Table component="div" sx={{ minWidth: 650 }} aria-label="simple table">
           <SortingTableHead order={order} orderBy={orderBy} onRequestSort={handleRequestSort} />
-          <TableBody>
+          <TableBody component="div">
             {tableBody.map(row => (
               <TableRow
                 key={row.projectID}
@@ -90,16 +83,16 @@ const ProjectTable: FunctionComponent<ProjectTableProps> = ({ tableHead, tableBo
                 component={Link}
                 href={`/w/projects/${row.projectID}`}
               >
-                <TableCell component="th" scope="row">
+                <TableCell component="div" sx={{ width: 130 }}>
                   {row.status}
                 </TableCell>
-                <TableCell>{row.projectID}</TableCell>
-                <TableCell>{row.name}</TableCell>
-                <TableCell>{row.owner}</TableCell>
-                <TableCell>
+                <TableCell component="div" sx={{ width: 130 }}>{row.projectID}</TableCell>
+                <TableCell component="div" sx={{ width: "auto" }}>{row.name}</TableCell>
+                <TableCell component="div" sx={{ width: 300 }}>{row.owner}</TableCell>
+                <TableCell component="div" sx={{ width: 200 }}>
                   {row.actualStartDate ? moment(row.actualStartDate).format("LL") : moment(row.scheduledStartDate).format("LL")}
                 </TableCell>
-                <TableCell>
+                <TableCell component="div" sx={{ width: 200 }}>
                   {row.actualEndDate
                     ? moment(row.actualEndDate).format("LL")
                     : row.scheduledEndDate

@@ -26,3 +26,11 @@ export type IPaginatedData<T> = {
   page: number;
   pages: number;
 };
+
+export type IAddress = {
+  address1: string;
+  address2?: string;
+  city: string;
+  state: string;
+  pinCode: string;
+};

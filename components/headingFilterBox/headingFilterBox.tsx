@@ -1,21 +1,21 @@
-import { Grid, Typography } from "@mui/material";
+import { Button, Grid } from "@mui/material";
 import { FunctionComponent } from "react";
 import Filters, { FiltersProps } from "../projects/filters/filters";
 
 interface HeadingFilterBoxProps extends FiltersProps {
-  title: string;
+  onCreate: () => void;
 }
 
 const gridStyle = {
-  padding: "10px 0 18px"
+  padding: "10px 0 16px"
 };
 
-const HeadingFilterBox: FunctionComponent<HeadingFilterBoxProps> = ({ title, ...filterProps }) => {
+const HeadingFilterBox: FunctionComponent<HeadingFilterBoxProps> = ({ onCreate, ...filterProps }) => {
   return (
     <Grid container sx={gridStyle} justifyContent="space-between">
-      <Typography variant="h1" component="h1">
-        {title}
-      </Typography>
+      <Button variant="contained" onClick={onCreate}>
+        New Project
+      </Button>
       <Filters {...filterProps} />
     </Grid>
   );
